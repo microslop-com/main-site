@@ -350,7 +350,7 @@ function Header() {
 
         {/* Mobile toggle */}
         <button
-          className="flex h-11 w-11 items-center justify-center rounded-lg md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-accent md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >

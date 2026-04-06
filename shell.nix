@@ -37,6 +37,7 @@ pkgs.mkShell {
     echo "Install deps:  bun install"
     echo "Build site:    bun run build"
     echo "Output dir:    out/"
+    echo "python3 -m http.server 8000 -d out"
     echo
   '';
 }
