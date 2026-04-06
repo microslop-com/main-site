@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import {
   AlertTriangle,
   Search,
@@ -185,7 +185,7 @@ function useSlopCounter() {
 // ============================================================================
 // ANIMATION VARIANTS
 // ============================================================================
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
     opacity: 1,
@@ -308,7 +308,7 @@ function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 right-0 left-0 z-[60] border-b border-border/40 bg-background/80 backdrop-blur-xl pt-[env(safe-area-inset-top)]">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3 lg:px-8">
         <button
           onClick={() => scrollTo("#top")}
@@ -350,7 +350,7 @@ function Header() {
 
         {/* Mobile toggle */}
         <button
-          className="flex h-11 w-11 items-center justify-center rounded-lg transition-colors hover:bg-accent md:hidden"
+          className="flex h-12 w-12 -mr-1 items-center justify-center rounded-lg active:bg-accent md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -369,14 +369,15 @@ function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="overflow-hidden border-t border-border/40 md:hidden"
           >
-            <nav className="flex flex-col gap-1 px-4 py-3 pb-4">
+            <nav className="flex flex-col gap-1 px-4 py-3 pb-6">
               {links.map((link) => (
                 <button
                   key={link.href}
                   onClick={() => scrollTo(link.href)}
-                  className="flex h-12 items-center rounded-lg px-4 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  className="flex h-12 items-center rounded-lg px-4 text-left text-sm font-medium text-muted-foreground transition-colors active:bg-accent active:text-foreground md:hidden"
                 >
                   {link.label}
                 </button>
@@ -385,7 +386,7 @@ function Header() {
                 href="https://status.microslop.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-12 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-emerald-500 transition-colors hover:bg-accent"
+                className="flex h-12 items-center gap-2 rounded-lg px-4 text-sm font-semibold text-emerald-500 transition-colors active:bg-accent md:hidden"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -1499,6 +1500,8 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <Header />
+      {/* Spacer for fixed header */}
+      <div className="h-[52px] sm:h-[56px]" />
       <main>
         <HeroSection />
         <ManifestSection />
@@ -1507,6 +1510,8 @@ export default function Home() {
         <ReportSection />
       </main>
       <Footer />
+      {/* Spacer for mobile bottom nav */}
+      <div className="h-16 md:hidden" />
       <MobileBottomNav />
       <ScrollToTop />
       <PWAInstallBanner />
