@@ -1,0 +1,39 @@
+{
+  "name": "MICROSLOP — Microsoft's AI Slop Tracker",
+  "short_name": "MICROSLOP",
+  "description": "Track and document Microsoft's AI slop flooding the internet.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["news", "social"],
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Report Slop",
+      "url": "/#report",
+      "description": "Submit a new slop report"
+    },
+    {
+      "name": "Complaints",
+      "url": "/#complaints",
+      "description": "View complaints board"
+    }
+  ]
+}

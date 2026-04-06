@@ -1,0 +1,66 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# next.js
+.next/
+out/
+
+# production
+build/
+dist/
+mini-services/
+skills/
+opencode.json
+.codex
+# misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev.log
+server.log
+.pnpm-debug.log*
+
+# env files
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# database
+db/
+*.db
+*.db-journal
+
+# prisma
+prisma/
+
+# server files (not needed for static site)
+src/lib/db.ts
+Caddyfile
+upload/
+examples/
+
+# dev tools
+worklog.md
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# download folder (generated static site copies — not source code)
+download/
