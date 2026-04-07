@@ -53,6 +53,7 @@ interface Complaint {
   description: string;
   category: string;
   severity: string;
+  url?: string | null;
   email?: string | null;
   status: string;
   createdAt: string;
@@ -63,6 +64,7 @@ interface Complaint {
 // ADMIN COMPLAINTS MANAGEMENT
 // ============================================================================
 const ADMIN_STORAGE_KEY = "microslop_admin_complaints";
+const PINNED_COMPLAINT_ID = "default-0";
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
@@ -70,6 +72,104 @@ function generateId(): string {
 
 // Hardcoded example complaints visible to all visitors
 const DEFAULT_COMPLAINTS: Complaint[] = [
+  {
+    id: "default-0",
+    title: "Microsoft Admin Center Products Page broken",
+    description:
+      'Microslop vibecoded the "Your Products" tab into oblivion. Resulting in the fun and quirky side effects, that all our MAK keys are inaccessible until they fix it. Fun!',
+    category: "other",
+    severity: "critical",
+    url: "https://admin.cloud.microsoft/#/subscriptions",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T09:00:00.000Z",
+    updatedAt: "2026-04-07T09:00:00.000Z",
+  },
+  {
+    id: "default-5",
+    title: "Copilot becomes stupid with math",
+    description:
+      'I gave Copilot a staircase puzzle made of offset n x n x n cubes and asked how many unit cubes a perfectly straight needle would pass through from the top-left-front corner of the 10th step to the bottom-right-back corner of the 1st step. Copilot answered: "Short version: it passes through more cubes in the 10th step. In fact: Step 1: the needle passes through 1 unit cube. Step 10: the needle passes through 10 unit cubes." I know the answer is not this.',
+    category: "hallucination",
+    severity: "high",
+    url: "https://copilot.microsoft.com/shares/ZEuEHuicgUfhn3mizKRSp",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T09:10:00.000Z",
+    updatedAt: "2026-04-07T09:10:00.000Z",
+  },
+  {
+    id: "default-6",
+    title: "Microsoft misrepresents legal and compliance documentation",
+    description:
+      "I manage around 100 pages of compliance and process guidance for a large community. Microsoft and search engines frequently misrepresent national requirements as local ones, as though only our institution requires them.",
+    category: "hallucination",
+    severity: "critical",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T09:20:00.000Z",
+    updatedAt: "2026-04-07T09:20:00.000Z",
+  },
+  {
+    id: "default-7",
+    title: "Broken Windows 11 File Explorer",
+    description:
+      'Opening File Explorer, creating or closing tabs, and opening context menus all feel sluggish. Dark mode also still throws "flashbangs" in File Explorer.',
+    category: "ui",
+    severity: "high",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T09:30:00.000Z",
+    updatedAt: "2026-04-07T09:30:00.000Z",
+  },
+  {
+    id: "default-8",
+    title: "Forced AI appearance in Office on web, without any way to disable it",
+    description:
+      'Going to Outlook -> Settings -> General -> Privacy and data -> Privacy Settings and turning off optional connected experiences used to work to disable Copilot features, but now it does not. It wastes space and hurts the user experience, especially for school districts where some users are too young to use it.',
+    category: "ui",
+    severity: "high",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T09:40:00.000Z",
+    updatedAt: "2026-04-07T09:40:00.000Z",
+  },
+  {
+    id: "default-9",
+    title: "Windows updates",
+    description:
+      'I assume Microslop makes Windows updates with Copilot, and Copilot with its bad hallucinations was the source of a lot of the bad stuff with Windows lately. Microslop wants Copilot to keep existing because they will "make" money, but I am certain they would get way more customers if they shift+deleted Copilot and bloatware from Windows.',
+    category: "hallucination",
+    severity: "medium",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T09:50:00.000Z",
+    updatedAt: "2026-04-07T09:50:00.000Z",
+  },
+  {
+    id: "default-10",
+    title: "Making an account in Win11 automatically adds Copilot button to taskbar, even if PC is not a Copilot+ PC",
+    description:
+      "When you make a new Windows account, regardless of whether a Microsoft account is logged in, it auto-adds the Copilot button to the taskbar. Just download a Windows 11 ISO, make a virtual machine, and look at the taskbar, or make a new account on an existing Windows 11 PC.",
+    category: "ui",
+    severity: "medium",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T10:00:00.000Z",
+    updatedAt: "2026-04-07T10:00:00.000Z",
+  },
+  {
+    id: "default-11",
+    title: "Copilot and Edge making your PC slower on Windows 10/11",
+    description:
+      "Edge and Copilot both have AI slop that seems to make your PC slower by a lot. Removing them made my PC faster by 40% according to benchmarks.",
+    category: "ui",
+    severity: "high",
+    email: null,
+    status: "open",
+    createdAt: "2026-04-07T10:10:00.000Z",
+    updatedAt: "2026-04-07T10:10:00.000Z",
+  },
   {
     id: "default-1",
     title: "Bing AI Summary Fabricated a Product Recall",
@@ -146,11 +246,16 @@ function mergeComplaints(): Complaint[] {
   const all = [...admin, ...DEFAULT_COMPLAINTS];
   // Deduplicate by id (admin complaints take priority)
   const seen = new Set<string>();
-  return all.filter((c) => {
+  const deduped = all.filter((c) => {
     if (seen.has(c.id)) return false;
     seen.add(c.id);
     return true;
   });
+
+  const pinned = deduped.find((c) => c.id === PINNED_COMPLAINT_ID);
+  if (!pinned) return deduped;
+
+  return [pinned, ...deduped.filter((c) => c.id !== PINNED_COMPLAINT_ID)];
 }
 
 // ============================================================================
@@ -1153,6 +1258,17 @@ function ComplaintsSection() {
                                     year: "numeric",
                                   })}
                                 </span>
+                                {complaint.url && (
+                                  <a
+                                    href={complaint.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 font-medium text-foreground transition-colors hover:text-destructive"
+                                  >
+                                    <ExternalLink className="h-3 w-3" />
+                                    Reference
+                                  </a>
+                                )}
                                 {complaint.email && (
                                   <span className="truncate text-[10px] sm:text-xs">
                                     {complaint.email}
