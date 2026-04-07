@@ -396,6 +396,7 @@ function MobileBottomNav() {
 // ============================================================================
 function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pendingScrollId, setPendingScrollId] = useState<string | null>(null);
 
   const links = [
     { href: "#top", label: "Home" },
@@ -405,18 +406,38 @@ function Header() {
     { href: "#report", label: "Report" },
   ];
 
-  const scrollTo = (href: string) => {
-    setMobileOpen(false);
-    const id = href.replace("#", "");
+  const scrollToSection = useCallback((id: string) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+    if (!el) return;
+
+    const header = document.querySelector("header");
+    const headerOffset = header instanceof HTMLElement ? header.offsetHeight : 0;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerOffset - 12;
+
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  }, []);
+
+  const handleNavClick = useCallback(
+    (href: string) => {
+      const id = href.replace("#", "");
+
+      if (mobileOpen) {
+        setPendingScrollId(id);
+        setMobileOpen(false);
+        return;
+      }
+
+      scrollToSection(id);
+    },
+    [mobileOpen, scrollToSection]
+  );
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3 lg:px-8">
         <button
-          onClick={() => scrollTo("#top")}
+          type="button"
+          onClick={() => handleNavClick("#top")}
           className="flex items-center gap-2 transition-opacity hover:opacity-80"
         >
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive sm:h-9 sm:w-9">
@@ -431,8 +452,9 @@ function Header() {
         <nav className="hidden items-center gap-1 md:flex">
           {links.map((link) => (
             <button
+              type="button"
               key={link.href}
-              onClick={() => scrollTo(link.href)}
+              onClick={() => handleNavClick(link.href)}
               className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               {link.label}
@@ -455,9 +477,11 @@ function Header() {
 
         {/* Mobile toggle */}
         <button
+          type="button"
           className="flex h-11 w-11 items-center justify-center rounded-lg md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
         >
           {mobileOpen ? (
             <X className="h-6 w-6" />
@@ -468,7 +492,13 @@ function Header() {
       </div>
 
       {/* Mobile nav dropdown */}
-      <AnimatePresence>
+      <AnimatePresence
+        onExitComplete={() => {
+          if (!pendingScrollId) return;
+          scrollToSection(pendingScrollId);
+          setPendingScrollId(null);
+        }}
+      >
         {mobileOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
@@ -479,8 +509,9 @@ function Header() {
             <nav className="flex flex-col gap-1 px-4 py-3 pb-4">
               {links.map((link) => (
                 <button
+                  type="button"
                   key={link.href}
-                  onClick={() => scrollTo(link.href)}
+                  onClick={() => handleNavClick(link.href)}
                   className="flex h-12 items-center rounded-lg px-4 text-left text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                 >
                   {link.label}
