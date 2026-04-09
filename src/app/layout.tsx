@@ -71,6 +71,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="format-detection" content="telephone=no" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="21ef95c6-055c-4dd0-bf9e-3024ba280609"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
